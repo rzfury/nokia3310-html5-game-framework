@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Nokia Game</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            overflow: hidden;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        canvas {
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="840" height="480"></canvas>
+    <script src="lib/variables/constants.js"></script>
+    <script src="lib/variables/global.js"></script>
+    <script src="lib/method/init.js"></script>
+    <script src="lib/draw/map/numbers.js"></script>
+    <script src="lib/draw/draw-helper-method.js"></script>
+    <script src="lib/draw/basic-draw-method.js"></script>
+    <script src="lib/draw/other-draw-method.js"></script>
+    <script src="lib/boot.js"></script>
+    <script>
+        window.onload = BootUp;
+    </script>
+</body>
+</html>
