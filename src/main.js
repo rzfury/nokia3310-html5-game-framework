@@ -2,13 +2,10 @@ let playerUpdateWorker;
 
 function Initialize() {
 
-    playerUpdateWorker = new Worker('src/workers/playerUpdater/worker.js')
-
-    // playerUpdateWorker = CreateWorker('src/workers/playerUpdater.js');
+    playerUpdateWorker = CreateWorker('src/workers/playerUpdate/worker.js')
 
     playerUpdateWorker.onmessage = (event) => {
         xTest = event.data[0];
-        console.log('Message');
     }
     playerUpdateWorker.onerror = (event) => {
         console.log('Error', event);
