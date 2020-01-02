@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Draw map Maker</title>
+    <style>
+        html,
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: row;
+        }
+
+        h3 {
+            font-weight: 100;
+            letter-spacing: 2px;
+        }
+
+        hr {
+            border: none;
+            border-bottom: 1px solid #dbdbdb;
+            margin: 15px 10px;
+        }
+
+        canvas {
+            border: 1px solid #000;
+        }
+
+        .canvas-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 70%;
+            height: 100vh;
+        }
+
+        .canvas-options {
+            width: 30%;
+            height: 100vh;
+            padding-left: 1em;
+            padding-right: 1em;
+        }
+
+        .btn-generate {
+            border: none;
+            border: 1px solid #aaa;
+            padding: 6px 10px;
+            background-color: #bbb;
+            cursor: pointer;
+        }
+
+        [id*="optid-"] {
+            margin-bottom: 10px;
+        }
+
+        [id*="opt-color"] {
+            border: 1px solid #000;
+            display: inline-block;
+            width: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="canvas-container">
+        <canvas id="drawmap-canvas" width="840" height="480">
+            Enable Javascript
+        </canvas>
+    </div>
+    <div class="canvas-options">
+        <h3>Drawmap settings</h3>
+            <div id="optid-1">
+                Name : <input id="opt-name" placeholder="Drawmap name..." value="drawMap" onchange="EditName(this)"/>
+            </div>
+            <div id="optid-1">
+                Color : <span id="opt-color-draw">&nbsp;</span>
+                <button onclick="SwitchDrawingColor()">Switch [ X ]</button>
+            </div>
+            <div id="optid-2">
+                Color when Filling Transparency <span id="opt-color-autofill">&nbsp;</span>
+                <button onclick="SwitchDrawingColor()">Switch [ F ]</button>
+            </div>
+        <hr>
+        <span id="opt-filename">drawMap</span>.js - 
+        <button class="btn-generate" onclick="GenerateDrawMap()">Generate Drawmap</button>
+    </div>
+    <script src="lib/key-handler.js"></script>
+    <script src="lib/draw-method.js"></script>
+    <script src="main.js"></script>
+    <script>
+        window.onload = _Init;
+    </script>
+</body>
+
+</html>
