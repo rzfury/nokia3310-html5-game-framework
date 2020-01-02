@@ -102,7 +102,7 @@ function IsPressed(keyStateName) {
 
 function _InitKeyHandler(additionalDownHandle, additionalUpHandle) {
     window.addEventListener('keydown', (e) => {
-        if (document.activeElement !== optFilename) {
+        if (document.activeElement !== optName) {
             if (!e.ctrlKey) e.preventDefault();
 
             KeyDownHandle(e);
@@ -110,7 +110,7 @@ function _InitKeyHandler(additionalDownHandle, additionalUpHandle) {
         }
     });
     window.addEventListener('keyup', (e) => {
-        if (document.activeElement !== optFilename) {
+        if (document.activeElement !== optName) {
             if (!e.ctrlKey) e.preventDefault();
 
             KeyUpHandle(e);

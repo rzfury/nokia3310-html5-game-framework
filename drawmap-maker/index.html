@@ -78,6 +78,9 @@
     <div class="canvas-options">
         <h3>Drawmap settings</h3>
             <div id="optid-1">
+                Name : <input id="opt-name" placeholder="Drawmap name..." value="drawMap" onchange="EditName(this)"/>
+            </div>
+            <div id="optid-1">
                 Color : <span id="opt-color-draw">&nbsp;</span>
                 <button onclick="SwitchDrawingColor()">Switch [ X ]</button>
             </div>
@@ -86,7 +89,7 @@
                 <button onclick="SwitchDrawingColor()">Switch [ F ]</button>
             </div>
         <hr>
-        <input id="opt-filename" placeholder="Drawmap Name" value="draw-map"/>.js - 
+        <span id="opt-filename">drawMap</span>.js - 
         <button class="btn-generate" onclick="GenerateDrawMap()">Generate Drawmap</button>
     </div>
     <script src="lib/key-handler.js"></script>

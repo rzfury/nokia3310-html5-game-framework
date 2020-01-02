@@ -1,5 +1,5 @@
 let canvas, context;
-let optColor, optFilename;
+let optColor, optName;
 
 let crosshairPos = { x: 0, y: 0 };
 
@@ -45,10 +45,11 @@ function GenerateDrawMap() {
     console.log(drawArrays);
 
     const texts = JSON.stringify(drawArrays).replace(/\"/g, '');
+    const additional = `\n\n// X Axis Offset = ${borderRects.left}\n// Y Axis Offset = ${borderRects.right}\n`;
 
-    const textFileAsBlob = new Blob([`const ${optFilename.value} = ${texts};`], { type: 'text/plain' });
+    const textFileAsBlob = new Blob([`const ${optName.value} = ${texts};${additional}`], { type: 'text/plain' });
     const downloadLink = document.createElement("a");
-    downloadLink.download = optFilename.value + '.js';
+    downloadLink.download = optName.value + '.js';
     if (window.webkitURL != null) {
         downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
     } else {
@@ -71,11 +72,15 @@ function ManualKeyDownHandler(e) {
     }
 }
 
+function EditName(self) {
+    document.getElementById('opt-filename').innerHTML = self.value;
+}
+
 function _Init() {
     canvas = document.getElementById('drawmap-canvas');
     context = canvas.getContext('2d');
     optColor = document.getElementById('opt-color-draw');
-    optFilename = document.getElementById('opt-filename');
+    optName = document.getElementById('opt-name');
 
     canvas.addEventListener('mousemove', ControlMouseCrossHair, false);
     canvas.addEventListener('click', AddPixel, false);
