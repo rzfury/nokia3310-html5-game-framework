@@ -3,6 +3,7 @@ let optColor, optName;
 
 let crosshairPos = { x: 0, y: 0 };
 
+let drawBorder = false;
 let borderRects = {
     top: 0,
     left: 0,
@@ -20,7 +21,12 @@ let color = {
 
 let option = {
     color: color.dark,
-    autoFillColor: 1,
+    autoFillColor: color.light,
+    autoFillColorId: 1
+}
+
+let mouseState = {
+    click: false,
 }
 
 function GenerateDrawMap() {
@@ -45,7 +51,7 @@ function GenerateDrawMap() {
     console.log(drawArrays);
 
     const texts = JSON.stringify(drawArrays).replace(/\"/g, '');
-    const additional = `\n\n// X Axis Offset = ${borderRects.left}\n// Y Axis Offset = ${borderRects.right}\n`;
+    const additional = `\n\n// X Axis Offset = ${borderRects.left}\n// Y Axis Offset = ${borderRects.top}\n`;
 
     const textFileAsBlob = new Blob([`const ${optName.value} = ${texts};${additional}`], { type: 'text/plain' });
     const downloadLink = document.createElement("a");
@@ -62,8 +68,14 @@ function GenerateDrawMap() {
     downloadLink.click();
 }
 
+function ShowDrawBorder(self) {
+    drawBorder = self.checked;
+}
+
 function SwitchDrawingColor() {
     option.color = (option.color === color.dark ? color.light : color.dark);
+    option.autoFillColor = (option.autoFillColor === color.dark ? color.light : color.dark);
+    option.autoFillColorId = (option.color === color.dark ? 1 : 0);
 }
 
 function ManualKeyDownHandler(e) {
@@ -80,10 +92,13 @@ function _Init() {
     canvas = document.getElementById('drawmap-canvas');
     context = canvas.getContext('2d');
     optColor = document.getElementById('opt-color-draw');
+    optAutoFill = document.getElementById('opt-color-autofill');
     optName = document.getElementById('opt-name');
 
     canvas.addEventListener('mousemove', ControlMouseCrossHair, false);
-    canvas.addEventListener('click', AddPixel, false);
+    canvas.addEventListener('mousedown', (e) => { mouseState = { click: true } }, false);
+    canvas.addEventListener('mouseup', (e) => { mouseState = { click: false } }, false);
+    canvas.addEventListener('contextmenu', (e) => { e.preventDefault() }, false);
     canvas.oncontextmenu = RemovePixel;
 
     _InitKeyHandler(ManualKeyDownHandler);
@@ -104,6 +119,7 @@ function _Renderer() {
 
 function _UpdateOption() {
     optColor.style.backgroundColor = option.color;
+    optAutoFill.style.backgroundColor = option.autoFillColor;
 
     setTimeout(_UpdateOption, 1);
 }

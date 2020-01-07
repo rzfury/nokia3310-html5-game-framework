@@ -31,6 +31,7 @@
         }
 
         canvas {
+            cursor: none;
             border: 1px solid #000;
         }
 
@@ -77,19 +78,24 @@
     </div>
     <div class="canvas-options">
         <h3>Drawmap settings</h3>
-            <div id="optid-1">
-                Name : <input id="opt-name" placeholder="Drawmap name..." value="drawMap" onchange="EditName(this)"/>
-            </div>
-            <div id="optid-1">
-                Color : <span id="opt-color-draw">&nbsp;</span>
-                <button onclick="SwitchDrawingColor()">Switch [ X ]</button>
-            </div>
-            <div id="optid-2">
-                Color when Filling Transparency <span id="opt-color-autofill">&nbsp;</span>
-                <button onclick="SwitchDrawingColor()">Switch [ F ]</button>
-            </div>
+        <div id="optid-1">
+            Name : <input id="opt-name" placeholder="Drawmap name..." value="drawMap" onchange="EditName(this)" />
+        </div>
+        <div id="optid-1">
+            Color : <span id="opt-color-draw">&nbsp;</span>
+            <button onclick="SwitchDrawingColor()">Switch [ X ]</button>
+        </div>
+        <div id="optid-2">
+            Color when Filling Transparency <span id="opt-color-autofill">&nbsp;</span>
+            <button onclick="SwitchDrawingColor()">Switch [ X ]</button>
+        </div>
+        <div id="optid-3">
+            <label for="draw-border">
+                <input type="checkbox" id="draw-border" onclick="ShowDrawBorder(this)" /> Show Draw Border
+            </label>
+        </div>
         <hr>
-        <span id="opt-filename">drawMap</span>.js - 
+        <span id="opt-filename">drawMap</span>.js -
         <button class="btn-generate" onclick="GenerateDrawMap()">Generate Drawmap</button>
     </div>
     <script src="lib/key-handler.js"></script>
