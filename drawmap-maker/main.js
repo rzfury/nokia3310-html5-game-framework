@@ -1,5 +1,5 @@
 let canvas, context;
-let optColor, optName;
+let optColor, optName, detailProps, optNormal, optMulti, optMultiCName;
 
 let crosshairPos = { x: 0, y: 0 };
 
@@ -10,6 +10,12 @@ let borderRects = {
     right: 0,
     bottom: 0,
 };
+
+let isDrawingRect = false;
+let drawRect = false;
+let readyToDraw = false;
+let point1 = {x: 0, y: 0};
+let point2 = {x: 0, y: 0};
 
 let drawCoords = [];
 let coordsColor = [];
@@ -27,9 +33,14 @@ let option = {
 
 let mouseState = {
     click: false,
+    clickEvent: false,
+    moveEvent: null,
 }
 
-function GenerateDrawMap() {
+let multiMode = false;
+let tempObjects = {};
+
+function GenerateDrawArray() {
     const drawWidth = borderRects.right - borderRects.left + 1;
     const drawHeight = borderRects.bottom - borderRects.top + 1;
 
@@ -43,15 +54,24 @@ function GenerateDrawMap() {
             });
             const pixelIndex = drawCoords.indexOf(stringPos);
 
-            drawRow[i] = pixelIndex >= 0 ? coordsColor[pixelIndex] : option.autoFillColor;
+            drawRow[i] = pixelIndex >= 0 ? coordsColor[pixelIndex] : option.autoFillColor === color.dark ? 0 : 1;
         }
         drawArrays[h] = drawRow;
     }
 
-    console.log(drawArrays);
+    return drawArrays;
+}
 
-    const texts = JSON.stringify(drawArrays).replace(/\"/g, '');
-    const additional = `\n\n// X Axis Offset = ${borderRects.left}\n// Y Axis Offset = ${borderRects.top}\n`;
+function GenerateDrawMap() {
+    let texts = '', additional = '';
+
+    if(multiMode) {
+        texts = JSON.stringify(tempObjects).replace(/\"/g, '');
+    } else {
+        let drawArrays = GenerateDrawArray();
+        texts = JSON.stringify(drawArrays).replace(/\"/g, '');
+        additional = `\n\n// X Axis Offset = ${borderRects.left}\n// Y Axis Offset = ${borderRects.top}\n`;
+    }
 
     const textFileAsBlob = new Blob([`const ${optName.value} = ${texts};${additional}`], { type: 'text/plain' });
     const downloadLink = document.createElement("a");
@@ -68,6 +88,60 @@ function GenerateDrawMap() {
     downloadLink.click();
 }
 
+function AssignDrawMapToObject() {
+    let keyName = optMultiCName.value;
+    const drawMap = GenerateDrawArray();
+
+    if(tempObjects.hasOwnProperty(keyName)) {
+        let dupesCount = 1;
+        while(tempObjects.hasOwnProperty(keyName)) {
+            keyName = optMultiCName.value + dupesCount; 
+            dupesCount++;
+        }
+    }
+
+    Object.assign(tempObjects, { [keyName]: drawMap });
+
+    drawCoords.length = 0;
+    coordsColor.length = 0;
+
+    ShowDrawMapObjDetail();
+}
+
+function DeleteDrawMapFromObject(keyName) {
+    delete tempObjects[keyName];
+
+    ShowDrawMapObjDetail();
+}
+
+function ShowDrawMapObjDetail() {
+    const optDetailDrawmap = document.getElementById('multi-mode-detail');
+
+    let html = '';
+    for(let key in tempObjects) {
+        html += `<div id="opt-detail-${key}">`;
+        html += `${key} - <button class="btn-remove" onclick="DeleteDrawMapFromObject('${key}')">Remove</button>`;
+        html += '</div>';
+    }
+    optDetailDrawmap.innerHTML = html;
+    optDetailDrawmap.scrollTop = optDetailDrawmap.scrollHeight;
+}
+
+function ToggleDrawRect(self) {
+    isDrawingRect = self.checked;
+}
+
+function ToggleMultiMode(self) {
+    multiMode = self.checked;
+    if(multiMode) {
+        optNormal.style.display = 'none';
+        optMulti.style.display = 'initial';
+    } else {
+        optNormal.style.display = 'initial';
+        optMulti.style.display = 'none';
+    }
+}
+
 function ShowDrawBorder(self) {
     drawBorder = self.checked;
 }
@@ -81,6 +155,9 @@ function SwitchDrawingColor() {
 function ManualKeyDownHandler(e) {
     if (e.key.toLowerCase() === 'x') {
         SwitchDrawingColor();
+    } else if (e.key.toLowerCase() === 'r') {
+        isDrawingRect = !isDrawingRect;
+        document.getElementById('draw-rect').checked = isDrawingRect;
     }
 }
 
@@ -94,17 +171,37 @@ function _Init() {
     optColor = document.getElementById('opt-color-draw');
     optAutoFill = document.getElementById('opt-color-autofill');
     optName = document.getElementById('opt-name');
+    optNormal = document.getElementById('opt-normal-mode');
+    optMulti = document.getElementById('opt-multi-mode');
+    optMultiCName = document.getElementById('opt-drawmap-name');
+    detailProps = document.getElementById('detail-props');
 
     canvas.addEventListener('mousemove', ControlMouseCrossHair, false);
-    canvas.addEventListener('mousedown', (e) => { mouseState = { click: true } }, false);
-    canvas.addEventListener('mouseup', (e) => { mouseState = { click: false } }, false);
+    canvas.addEventListener('mousedown', (e) => {
+        mouseState.click = true;
+        mouseState.clickEvent = e;
+        if(isDrawingRect) { 
+            borderRects = { top: 0, left: 0, right: 0, bottom: 0 };
+            drawRect = true;
+            readyToDraw = true;
+        } else {
+            AddPixel(e);
+            RemovePixel(e);
+        }
+    }, false);
+    canvas.addEventListener('mouseup', (e) => {
+        mouseState.click = false;
+        mouseState.clickEvent = e;
+        drawRect = false;
+        FillDrawingRect();
+    }, false);
     canvas.addEventListener('contextmenu', (e) => { e.preventDefault() }, false);
     canvas.oncontextmenu = RemovePixel;
 
     _InitKeyHandler(ManualKeyDownHandler);
 
     _Renderer();
-    _UpdateOption();
+    _Update();
 }
 
 function _Renderer() {
@@ -117,9 +214,19 @@ function _Renderer() {
     requestAnimationFrame(_Renderer);
 }
 
-function _UpdateOption() {
+function _Update() {
     optColor.style.backgroundColor = option.color;
     optAutoFill.style.backgroundColor = option.autoFillColor;
 
-    setTimeout(_UpdateOption, 1);
+    const borderWidth = borderRects.right - borderRects.left + 1;
+    const borderHeight = borderRects.bottom - borderRects.top + 1;
+    const detailBorderRect = ` Rect:[ T:${borderRects.top} B:${borderRects.bottom} L:${borderRects.left} R:${borderRects.right} | W:${borderWidth} H:${borderHeight} ]`;
+    const detailBorderAll = ` Draw:[ T:${borderRects.top} B:${borderRects.bottom} L:${borderRects.left} R:${borderRects.right} | W:${borderWidth} H:${borderHeight} ]`;
+    detailProps.innerHTML = `X:${Math.floor(crosshairPos.x/10)} Y:${Math.floor(crosshairPos.y/10)} Mode:${isDrawingRect?'RECTANGLE':'BRUSH'}${(isDrawingRect&&drawRect?detailBorderRect:detailBorderAll)}`;
+
+    AddPixel(mouseState.moveEvent);
+    RemovePixel(mouseState.moveEvent);
+    DrawRect(mouseState.clickEvent, mouseState.moveEvent);
+
+    setTimeout(_Update, 1);
 }

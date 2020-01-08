@@ -5,73 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link type="text/css" rel="stylesheet" href="main.css"/>
     <title>Draw map Maker</title>
-    <style>
-        html,
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            margin: 0;
-            padding: 0;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: row;
-        }
-
-        h3 {
-            font-weight: 100;
-            letter-spacing: 2px;
-        }
-
-        hr {
-            border: none;
-            border-bottom: 1px solid #dbdbdb;
-            margin: 15px 10px;
-        }
-
-        canvas {
-            cursor: none;
-            border: 1px solid #000;
-        }
-
-        .canvas-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 70%;
-            height: 100vh;
-        }
-
-        .canvas-options {
-            width: 30%;
-            height: 100vh;
-            padding-left: 1em;
-            padding-right: 1em;
-        }
-
-        .btn-generate {
-            border: none;
-            border: 1px solid #aaa;
-            padding: 6px 10px;
-            background-color: #bbb;
-            cursor: pointer;
-        }
-
-        [id*="optid-"] {
-            margin-bottom: 10px;
-        }
-
-        [id*="opt-color"] {
-            border: 1px solid #000;
-            display: inline-block;
-            width: 50px;
-        }
-    </style>
 </head>
 
 <body>
     <div class="canvas-container">
+        <div id="detail-props" style="width: 80%; margin-bottom: 10px;"></div>
         <canvas id="drawmap-canvas" width="840" height="480">
             Enable Javascript
         </canvas>
@@ -83,20 +23,45 @@
         </div>
         <div id="optid-1">
             Color : <span id="opt-color-draw">&nbsp;</span>
-            <button onclick="SwitchDrawingColor()">Switch [ X ]</button>
+            <button onclick="SwitchDrawingColor()">Switch (X)</button>
         </div>
         <div id="optid-2">
-            Color when Filling Transparency <span id="opt-color-autofill">&nbsp;</span>
-            <button onclick="SwitchDrawingColor()">Switch [ X ]</button>
+            Color when filling transparency <span id="opt-color-autofill">&nbsp;</span>
+            <button onclick="SwitchDrawingColor()">Switch (X)</button>
         </div>
-        <div id="optid-3">
+        <div id="optid-4">
+            <label for="draw-rect">
+                <input type="checkbox" id="draw-rect" onclick="ToggleDrawRect(this)" /> Use Rectangle Tool (R)
+            </label>
+        </div>
+        <div id="optid-5">
             <label for="draw-border">
                 <input type="checkbox" id="draw-border" onclick="ShowDrawBorder(this)" /> Show Draw Border
             </label>
         </div>
+        <div id="optid-6">
+            <label for="toggle-multi">
+                <input type="checkbox" id="toggle-multi" onclick="ToggleMultiMode(this)" /> Multiple Draw Map
+            </label>
+        </div>
         <hr>
-        <span id="opt-filename">drawMap</span>.js -
-        <button class="btn-generate" onclick="GenerateDrawMap()">Generate Drawmap</button>
+        <div id="opt-normal-mode">
+            <span id="opt-filename">drawMap</span>.js - <button class="btn-generate" onclick="GenerateDrawMap()">Generate Drawmap</button>
+        </div>
+        <div id="opt-multi-mode" style="display: none;">
+            <div id="multi-mode-detail">
+
+            </div>
+            <div class="multi-mode-btns">
+                <div style="margin-bottom: 10px;">
+                    Drawmap Name: <input id="opt-drawmap-name" value="child_map"/>
+                </div>
+                <div>
+                    <button class="btn-generate" onclick="AssignDrawMapToObject()">Add New</button>
+                    <button class="btn-generate" onclick="GenerateDrawMap()">Generate</button>
+                </div>
+            </div>
+        </div>
     </div>
     <script src="lib/key-handler.js"></script>
     <script src="lib/draw-method.js"></script>
